@@ -1,4 +1,6 @@
-/* index design */
+/* ============================================
+   LIBRARY MANAGEMENT SYSTEM STYLING
+   ============================================ */
 
 .container,
 .row,
@@ -14,11 +16,19 @@
 .login-form-1 {
     padding: 5%;
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 12px;
+    background: #1a2847;
+    border: 1px solid #334155;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .login-form-1 h3 {
     text-align: center;
-    color: #333;
+    color: #f1f5f9;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .login-container form {
@@ -27,29 +37,126 @@
 
 .btnSubmit {
     width: 50%;
-    border-radius: 1rem;
+    border-radius: 12px;
     padding: 1.5%;
     border: none;
     cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
 }
 
 .login-form-1 .btnSubmit {
     font-weight: 600;
     color: #fff;
-    background-color: #0062cc;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.login-form-1 .btnSubmit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
 }
 
 .login-form-2 .ForgetPwd {
-    color: #fff;
+    color: #cbd5e1;
     font-weight: 600;
     text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-form-2 .ForgetPwd:hover {
+    color: #818cf8;
 }
 
 .login-form-1 .ForgetPwd {
-    color: #0062cc;
+    color: #818cf8;
     font-weight: 600;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
+.login-form-1 .ForgetPwd:hover {
+    color: #c4b5fd;
+}
+
+/* ============================================
+   BOOK MANAGEMENT DASHBOARD STYLING
+   ============================================ */
+
+/* Book cards and listings */
+.book-card {
+    background: #1a2847;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.book-card:hover {
+    border-color: #818cf8;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
+}
+
+.book-title {
+    color: #f1f5f9;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.book-author {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.book-status {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.book-status.available {
+    background: rgba(34, 197, 94, 0.1);
+    color: #86efac;
+}
+
+.book-status.issued {
+    background: rgba(248, 113, 113, 0.1);
+    color: #fca5a5;
+}
+
+.book-status.pending {
+    background: rgba(250, 204, 21, 0.1);
+    color: #fde047;
+}
+
+/* Request/Issue buttons */
+.btn-request-book,
+.btn-issue-book,
+.btn-return-book {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #f1f5f9;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+}
+
+.btn-request-book:hover,
+.btn-issue-book:hover,
+.btn-return-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+}
 
 /* Dashboard Design */

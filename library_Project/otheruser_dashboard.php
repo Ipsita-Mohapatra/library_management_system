@@ -1,170 +1,92 @@
 <?php
-
 session_start();
 
-$userloginid=$_SESSION["userid"] = $_GET['userlogid'];
-// echo $_SESSION["userid"];
-
-
+$userloginid = $_SESSION["userid"] = $_GET['userlogid'];
+include("data_class.php");
 ?>
 
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Admin Dashboard</title>
-        <meta name="description" content="">
+        <title>Student Portal - Library Management</title>
+        <meta name="description" content="Student Dashboard - Library Management System">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-      <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <!-- <link rel="stylesheet" href="style.css"> -->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="student-dashboard.css">
+        <link rel="stylesheet" href="advanced-animations.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
-    <style>
-
-        body{
-                background-image: url('images/studentd.jpg');
-                background-repeat: no-repeat;
-
-        }
-            .innerright,label {
-   
-    font-weight:bold;
-    color: #d8f3dc;
-   
-}
-.container,
-.row,
-.imglogo {
-    margin:auto;
-}
-
-
-
-/* Logo image */
-.imglogo{
-    width: 550px;          
-    height: 110px;
-    display: block;
-    margin: auto;
-     margin-bottom: 10px;
-}
-
-
-.innerdiv {
-    text-align: center;
-    /* width: 500px; */
-    margin: 100px;
-}
-input{
-    margin-left:20px;
-}
-
-.leftinnerdiv {
-    float: left;
-    width: 25%;
-    margin-top: -30px;
-}
-
-.rightinnerdiv {
-    float: right;
-    width: 75%;
-
-
-}
-
-.innerright {
-   background: linear-gradient(135deg, #83c5be, #006d77);
- 
-    
-
-
-}
-
-.greenbtn {
-        background: linear-gradient(135deg, #2c3e50, #4ca1af);           /*add*/
-color: #fff;
-        border: none;                         /*add*/
-        font-weight: 600;  
-    width: 95%;
-    height: 40px;
-    margin-top: 8px;
-}
-
-.greenbtn,
-a {
-    text-decoration: none;
-color: #fff;
-        font-weight: 600;  
-    font-size: large;
-}
-
-th{
-    background-color:  #2d7570;
-    color: black;
-    font-weight: 700;
-
-}
-td{
-    background-color: #42999b;
-    color:#1a1616;
-     font-weight: 500;
-}
-td, a{
-   color:#1a1616;
-     font-weight: 500;
-}
-    </style>
+    <body class="dashboard-page">
     <body>
-        
+    <!-- NAVBAR -->
+    <div class="navbar-student">
+        <div class="navbar-brand">
+            <img src="images/logo1.png" alt="Library" class="nav-logo" />
+            <span class="brand-text">Student Portal</span>
+        </div>
+        <a href="index.php" class="navbar-logout">LOGOUT</a>
+    </div>
 
-    <?php
-   include("data_class.php");
-    ?>
-           <div class="container">
-            <div class="innerdiv">
-            <div class="row"><img class="imglogo" src="images/logo1.png"/></div>
-             <!-- <div class="row logo-box">
-    <img class="imglogo" src="images/logo1.png" alt="Library Logo">
-</div> -->
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <button class="sidebar-btn" onclick="openpart('myaccount')">
+                    <img src="images/icon/profile.png" alt="My Account"/> My Account
+                </button>
+            </li>
+            <li class="sidebar-nav-item">
+                <button class="sidebar-btn" onclick="openpart('requestbook')">
+                    <img src="images/icon/book.png" alt="Request Book"/> Request Book
+                </button>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="book_report.php?userlogid=<?php echo $userloginid; ?>" class="sidebar-btn">
+                    <img src="images/icon/monitoring.png" alt="Book Report"/> Book Report
+                </a>
+            </li>
+        </ul>
+    </nav>
 
-            <div class="leftinnerdiv">
-                <br>
-                <Button class="greenbtn" onclick="openpart('myaccount')"> <img class="icons" src="images/icon/profile.png" width="30px" height="30px"/>  My Account</Button>
-                <Button class="greenbtn" onclick="openpart('requestbook')"><img class="icons" src="images/icon/book.png" width="30px" height="30px"/> Request Book</Button>
-                <Button class="greenbtn" onclick="openpart('issuereport')"> <img class="icons" src="images/icon/monitoring.png" width="30px" height="30px"/>  Book Report</Button>
-                <a href="index.php"><Button class="greenbtn" ><img class="icons" src="images/icon/logout.png" width="30px" height="30px"/> LOGOUT</Button></a>
-            </div>
-
-
-            <div class="rightinnerdiv">   
-            <div id="myaccount" class="innerright portion" style="<?php  if(!empty($_REQUEST['returnid'])){ echo "display:none";} else {echo ""; }?>">
-            <Button class="greenbtn" >My Account</Button>
-           
+    <!-- MAIN CONTENT -->
+    <main class="main-content">   
+        <!-- MY ACCOUNT SECTION -->
+        <div id="myaccount" class="content-section active">
+            <h2 class="section-title">My Account</h2>
             <?php
-
-            $u=new data;
+            $u = new data;
             $u->setconnection();
             $u->userdetail($userloginid);
-            $recordset=$u->userdetail($userloginid);
+            $recordset = $u->userdetail($userloginid);
             foreach($recordset as $row){
-
-            $id= $row[0];
-            $name= $row[1];
-            $email= $row[2];
-            $pass= $row[3];
-            $type= $row[4];
+                $id = $row[0];
+                $name = $row[1];
+                $email = $row[2];
+                $pass = $row[3];
+                $type = $row[4];
             }               
-                ?>
-
-            <p style="color:black"><u>Person Name:</u> &nbsp&nbsp<?php echo $name ?></p>
-            <p style="color:black"><u>Person Email:</u> &nbsp&nbsp<?php echo $email ?></p>
-            <p style="color:black"><u>Account Type:</u> &nbsp&nbsp<?php echo $type ?></p>
-        
+            ?>
+            <div class="profile-card">
+                <div class="profile-info">
+                    <div class="profile-info-item">
+                        <span class="profile-label">Name</span>
+                        <span class="profile-value"><?php echo $name ?></span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-label">Email</span>
+                        <span class="profile-value"><?php echo $email ?></span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-label">Account Type</span>
+                        <span class="profile-value" style="text-transform: capitalize;"><?php echo $type ?></span>
+                    </div>
+                </div>
             </div>
-            </div>
+        </div>
 
 
             
@@ -172,110 +94,70 @@ td, a{
 
 
             <div class="rightinnerdiv">   
-            <div id="issuereport" class="innerright portion" style="<?php  if(!empty($_REQUEST['returnid'])){ echo "display:none";} else {echo "display:none"; }?>">
-            <Button class="greenbtn" >BOOK RECORD</Button>
-
+        <!-- REQUEST BOOK SECTION -->
+        <div id="requestbook" class="content-section">
+            <h2 class="section-title">Request Book</h2>
             <?php
-
-            $userloginid=$_SESSION["userid"] = $_GET['userlogid'];
-            $u=new data;
+            $u = new data;
             $u->setconnection();
-            $u->getissuebook($userloginid);
-            $recordset=$u->getissuebook($userloginid);
+            $u->getbookissue();
+            $recordset = $u->getbookissue();
 
-            $table="<table style='font-family: Arial, Helvetica, sans-serif;border-collapse: collapse;width: 100%;'><tr><th style='  
-            padding: 8px;'>Name</th><th>Book Name</th><th>Issue Date</th><th>Return Date</th><th>Fine</th></th><th>Return</th></tr>";
+            $table = "<div class='table-responsive'><table><thead><tr><th>Book Image</th><th>Book Name</th><th>Author</th><th>Branch</th><th>Price</th><th>Action</th></tr></thead><tbody>";
 
             foreach($recordset as $row){
-                $table.="<tr>";
-               "<td>$row[0]</td>";
-                $table.="<td>$row[2]</td>";
-                $table.="<td>$row[3]</td>";
-                $table.="<td>$row[6]</td>";
-                $table.="<td>$row[7]</td>";
-                $table.="<td>$row[8]</td>";
-                $table.="<td><a href='otheruser_dashboard.php?returnid=$row[0]&userlogid=$userloginid'><button type='button' class='btn btn-primary'>Return</button></a></td>";
-                $table.="</tr>";
-                // $table.=$row[0];
+                $table .= "<tr>";
+                $table .= "<td><img src='uploads/".$row[1]."' style='width: 60px; height: 80px; border-radius: 8px;'></td>";
+                $table .= "<td>".$row[2]."</td>";
+                $table .= "<td>".$row[4]."</td>";
+                $table .= "<td>".$row[6]."</td>";
+                $table .= "<td>".$row[7]."</td>";
+                $table .= "<td><a href='requestbook.php?bookid=".$row[0]."&userid=".$userloginid."'><button type='button' class='btn-action'>Request</button></a></td>";
+                $table .= "</tr>";
             }
-            $table.="</table>";
+            $table .= "</tbody></table></div>";
 
             echo $table;
             ?>
-
-            </div>
-            </div>
-
-
-            <div class="rightinnerdiv">   
-            <div id="return" class="innerright portion" style="<?php  if(!empty($_REQUEST['returnid'])){ $returnid=$_REQUEST['returnid'];} else {echo "display:none"; }?>">
-            <Button class="greenbtn" >Return Book</Button>
-
-            <?php
-
-            $u=new data;
-            $u->setconnection();
-            $u->returnbook($returnid);
-            $recordset=$u->returnbook($returnid);
-                ?>
-
-            </div>
-            </div>
-
-
-            <div class="rightinnerdiv">   
-            <div id="requestbook" class="innerright portion" style="<?php  if(!empty($_REQUEST['returnid'])){ $returnid=$_REQUEST['returnid'];echo "display:none";} else {echo "display:none"; }?>">
-            <Button class="greenbtn" >Request Book</Button>
-
-            <?php
-            $u=new data;
-            $u->setconnection();
-            $u->getbookissue();
-            $recordset=$u->getbookissue();
-
-            $table="<table style='font-family: Arial, Helvetica, sans-serif;border-collapse: collapse;width: 100%;'><tr>
-            <th>Image</th><th>Book Name</th><th>Book Authour</th><th>branch</th><th>price</th></th><th>Request Book</th></tr>";
-
-            foreach($recordset as $row){
-                $table.="<tr>";
-               "<td>$row[0]</td>";
-               $table.="<td><img src='uploads/$row[1]' width='100px' height='100px' style='border:1px solid #333333;'></td>";
-               $table.="<td>$row[2]</td>";
-                $table.="<td>$row[4]</td>";
-                $table.="<td>$row[6]</td>";
-                $table.="<td>$row[7]</td>";
-                $table.="<td><a href='requestbook.php?bookid=$row[0]&userid=$userloginid'><button type='button' class='btn btn-primary'>Request Book</button></a></td>";
-           
-                $table.="</tr>";
-                // $table.=$row[0];
-            }
-            $table.="</table>";
-
-            echo $table;
-
-
-                ?>
-
-            </div>
-            </div>
-
-        </div>
         </div>
 
+    </main>
 
-        <script>
+
+    <script>
         function openpart(portion) {
-        var i;
-        var x = document.getElementsByClassName("portion");
-        for (i = 0; i < x.length; i++) {
-            x[i].style.display = "none";  
+            // Hide all sections
+            var sections = document.querySelectorAll('.content-section');
+            sections.forEach(function(section) {
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            var selectedSection = document.getElementById(portion);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+            
+            // Update sidebar button active state
+            var buttons = document.querySelectorAll('.sidebar-btn');
+            buttons.forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            
+            event.target.closest('.sidebar-btn').classList.add('active');
         }
-        document.getElementById(portion).style.display = "block";  
-        }
-
-   
- 
         
-        </script>
-    </body>
+        // Set the default active button on page load
+        window.addEventListener('load', function() {
+            var accountBtn = document.querySelector('.sidebar-btn');
+            if (accountBtn) {
+                accountBtn.classList.add('active');
+            }
+        });
+    </script>
+
+    <!-- Three.js Canvas -->
+    <canvas id="canvas-3d-dashboard"></canvas>
+    <script src="animations.js"></script>
+</body>
 </html>

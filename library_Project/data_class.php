@@ -89,7 +89,7 @@ class data extends db {
 
 
     function addbook($bookpic, $bookname, $bookdetail, $bookauthor, $bookpub, $branch, $bookprice, $bookquantity) {
-        $this->$bookpic=$bookpic;
+        $this->bookpic=$bookpic;
         $this->bookname=$bookname;
         $this->bookdetail=$bookdetail;
         $this->bookauthor=$bookauthor;
