@@ -2,30 +2,27 @@
 
 include("data_class.php");
 
-$login_email=$_GET['login_email'];
-$login_pasword=$_GET['login_pasword'];
+$login_email = isset($_GET['login_email']) ? trim($_GET['login_email']) : '';
+$login_pasword = isset($_GET['login_pasword']) ? trim($_GET['login_pasword']) : '';
 
-if($login_email==null||$login_pasword==null){
-    $emailmsg="";
-    $pasdmsg="";
-    
-    if($login_email==null){
-        $emailmsg="Email Empty";
-    }
-    if($login_pasword==null){
-        $pasdmsg="Pasword Empty";
-    }
+$errors = array();
 
-    header("Location: index.php?ademailmsg=$emailmsg&adpasdmsg=$pasdmsg");
+if(empty($login_email)){
+    $errors['email'] = "Email is required";
 }
 
-elseif($login_email!=null&&$login_pasword!=null){
-    $obj=new data();
-    $obj->setconnection();
-    $obj->adminLogin($login_email,$login_pasword);
-
+if(empty($login_pasword)){
+    $errors['password'] = "Password is required";
 }
 
+if(!empty($errors)){
+    $emailmsg = isset($errors['email']) ? $errors['email'] : '';
+    $pasdmsg = isset($errors['password']) ? $errors['password'] : '';
+    header("Location: admin-login.php?emailmsg=" . urlencode($emailmsg) . "&pasdmsg=" . urlencode($pasdmsg));
+    exit();
+}
 
-
+$obj = new data();
+$obj->setconnection();
+$obj->adminLogin($login_email, $login_pasword);
 

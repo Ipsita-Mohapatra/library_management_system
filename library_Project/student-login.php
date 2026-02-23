@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Library Management - Home</title>
+        <title>Student Login - Library Management</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="advanced-animations.css">
@@ -29,20 +29,22 @@
                 align-items: center;
                 justify-content: center;
                 overflow-x: hidden;
+                padding: 1rem 0;
             }
 
-            .home-container {
+            .login-container {
                 width: 100%;
-                max-width: 1200px;
-                padding: 2rem;
-                animation: fadeInUp 0.6s ease-out;
+                max-width: 500px;
+                padding: 2rem 1rem;
+                animation: fadeInUp 0.5s ease-out;
+                margin-top: -40px;
                 margin-bottom: 2rem;
             }
 
             @keyframes fadeInUp {
                 from {
                     opacity: 0;
-                    transform: translateY(30px);
+                    transform: translateY(20px);
                 }
                 to {
                     opacity: 1;
@@ -50,9 +52,9 @@
                 }
             }
 
-            .home-header {
+            .login-header {
                 text-align: center;
-                margin-bottom: 4rem;
+                margin-bottom: 2.5rem;
             }
 
             .logo-container {
@@ -62,85 +64,210 @@
             }
 
             .logo-container img {
-                height: 100px;
+                height: 80px;
                 width: auto;
                 border-radius: 12px;
-                box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+                box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
                 transition: transform 0.3s ease;
             }
 
             .logo-container img:hover {
-                transform: scale(1.08);
+                transform: scale(1.05);
             }
 
-            .home-header h1 {
-                font-size: 3rem;
-                font-weight: 800;
+            .login-header h1 {
+                font-size: 2.2rem;
+                font-weight: 700;
                 background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                letter-spacing: 2px;
-                margin-bottom: 0.8rem;
+                letter-spacing: 1px;
+                margin-bottom: 0.5rem;
             }
 
-            .home-header .subtitle {
+            .login-header p {
                 color: #cbd5e1;
-                font-size: 1.2rem;
-                letter-spacing: 0.8px;
-                margin-bottom: 1rem;
+                font-size: 0.95rem;
+                letter-spacing: 0.5px;
             }
 
-            .home-header .description {
-                color: #94a3b8;
-                font-size: 1rem;
-                max-width: 600px;
-                margin: 0 auto;
-                line-height: 1.6;
-            }
-
-            .login-options {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 2.5rem;
-                margin-top: 3rem;
-                max-width: 1000px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .login-card {
+            .login-form-wrapper {
                 background: #1a2847;
-                border: 2px solid #334155;
+                border: 1px solid #334155;
                 border-radius: 16px;
-                padding: 3rem 2rem;
-                text-align: center;
-                transition: all 0.4s ease;
-                cursor: pointer;
-                position: relative;
-                overflow: hidden;
-                animation: slideIn 0.7s ease-out;
+                padding: 2.5rem;
+                box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+                animation: slideIn 0.6s ease-out;
             }
 
-            .login-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-                transition: left 0.5s ease;
-            }
-
-            .login-card:hover::before {
-                left: 100%;
+            .login-form-wrapper:hover {
+                border-color: #818cf8;
+                box-shadow: 0 24px 48px rgba(99, 102, 241, 0.2);
             }
 
             @keyframes slideIn {
                 from {
                     opacity: 0;
-                    transform: translateY(30px);
+                    transform: translateX(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .login-form-wrapper h3 {
+                text-align: center;
+                color: #818cf8;
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 1.8rem;
+                letter-spacing: 0.5px;
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-group label {
+                display: block;
+                color: #cbd5e1;
+                font-weight: 600;
+                margin-bottom: 0.7rem;
+                font-size: 0.9rem;
+                letter-spacing: 0.3px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 0.9rem 1.2rem;
+                border: 1px solid #475569;
+                background: #0f172a;
+                color: #f1f5f9;
+                border-radius: 10px;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                font-family: 'Inter', sans-serif;
+            }
+
+            .form-group input::placeholder {
+                color: #64748b;
+            }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #818cf8;
+                background: #1a2847;
+                box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+            }
+
+            .error-label {
+                display: block;
+                color: #fca5a5;
+                font-size: 0.8rem;
+                margin-top: 0.4rem;
+                font-weight: 600;
+            }
+
+            .btnSubmit {
+                width: 100%;
+                padding: 1rem 1.5rem;
+                border: none;
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                color: #fff;
+                border-radius: 10px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 1rem;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            }
+
+            .btnSubmit:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+            }
+
+            .btnSubmit:active {
+                transform: translateY(-1px);
+            }
+
+            .signup-prompt {
+                text-align: center;
+                margin-top: 2rem;
+                padding-top: 2rem;
+                border-top: 2px solid #334155;
+            }
+
+            .signup-prompt p {
+                color: #cbd5e1;
+                font-size: 0.95rem;
+                margin-bottom: 1.2rem;
+                font-weight: 500;
+            }
+
+            .signup-btn {
+                display: inline-block;
+                padding: 0.8rem 2rem;
+                background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+                color: #fff;
+                border-radius: 10px;
+                text-decoration: none;
+                font-weight: 700;
+                transition: all 0.3s ease;
+                border: none;
+                cursor: pointer;
+                font-size: 0.95rem;
+                letter-spacing: 0.3px;
+                box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+            }
+
+            .signup-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(167, 139, 250, 0.5);
+                text-decoration: none;
+                color: #fff;
+            }
+
+            .signup-btn:active {
+                transform: translateY(-1px);
+            }
+
+            .back-link {
+                text-align: center;
+                margin-top: 1rem;
+            }
+
+            .back-link a {
+                color: #818cf8;
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.3s ease;
+                font-size: 0.9rem;
+            }
+
+            .back-link a:hover {
+                color: #c4b5fd;
+                text-decoration: underline;
+            }
+
+            .alert-msg {
+                padding: 1rem 1.2rem;
+                border-radius: 10px;
+                margin-bottom: 1.5rem;
+                color: #fca5a5;
+                background: rgba(252, 165, 165, 0.1);
+                border: 1px solid rgba(252, 165, 165, 0.3);
+                font-weight: 600;
+                animation: slideDownFade 0.4s ease-out;
+            }
+
+            @keyframes slideDownFade {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
                 }
                 to {
                     opacity: 1;
@@ -148,146 +275,21 @@
                 }
             }
 
-            .login-card:nth-child(1) {
-                animation-delay: 0.1s;
-            }
-
-            .login-card:nth-child(2) {
-                animation-delay: 0.3s;
-            }
-
-            .login-card:hover {
-                border-color: #818cf8;
-                box-shadow: 0 24px 48px rgba(99, 102, 241, 0.3);
-                transform: translateY(-8px);
-            }
-
-            .card-icon {
-                font-size: 4rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .card-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                color: #f1f5f9;
-                margin-bottom: 0.8rem;
-            }
-
-            .login-card:nth-child(1) .card-title {
-                color: #818cf8;
-            }
-
-            .login-card:nth-child(2) .card-title {
-                color: #c084fc;
-            }
-
-            .card-description {
-                color: #cbd5e1;
-                font-size: 0.95rem;
-                margin-bottom: 2rem;
-                line-height: 1.6;
-            }
-
-            .login-btn {
-                display: inline-block;
-                padding: 0.9rem 2.5rem;
-                border-radius: 10px;
-                text-decoration: none;
-                font-weight: 700;
-                font-size: 1rem;
-                transition: all 0.3s ease;
-                letter-spacing: 0.5px;
-            }
-
-            .login-card:nth-child(1) .login-btn {
-                background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
-                color: #fff;
-            }
-
-            .login-card:nth-child(2) .login-btn {
-                background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
-                color: #fff;
-            }
-
-            .login-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
-                text-decoration: none;
-                color: #fff;
-            }
-
-            .features {
-                margin-top: 4rem;
-                padding-top: 3rem;
-                border-top: 1px solid #334155;
-                text-align: center;
-            }
-
-            .features h3 {
-                color: #f1f5f9;
-                font-size: 1.5rem;
-                font-weight: 700;
-                margin-bottom: 2rem;
-            }
-
-            .feature-list {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 2rem;
-                max-width: 900px;
-                margin: 0 auto;
-            }
-
-            .feature-item {
-                color: #cbd5e1;
-                font-size: 0.95rem;
-            }
-
-            .feature-item::before {
-                content: '✓';
-                color: #86efac;
-                font-weight: bold;
-                margin-right: 0.8rem;
-                font-size: 1.2rem;
-            }
-
             @media (max-width: 768px) {
-                .home-container {
-                    padding: 1.5rem;
+                .login-container {
+                    padding: 1rem;
                 }
 
-                .home-header h1 {
-                    font-size: 2.2rem;
+                .login-form-wrapper {
+                    padding: 1.8rem;
                 }
 
-                .home-header .subtitle {
-                    font-size: 1rem;
-                }
-
-                .login-options {
-                    grid-template-columns: 1fr;
-                    gap: 1.5rem;
+                .login-header h1 {
+                    font-size: 1.8rem;
                 }
 
                 .logo-container img {
-                    height: 70px;
-                }
-
-                .login-card {
-                    padding: 2rem 1.5rem;
-                }
-
-                .card-icon {
-                    font-size: 3rem;
-                }
-
-                .card-title {
-                    font-size: 1.4rem;
-                }
-
-                .feature-list {
-                    grid-template-columns: 1fr;
+                    height: 60px;
                 }
 
                 .footer-content {
@@ -367,50 +369,66 @@
     </head>
     <body>
 
-    <div class="home-container">
-        <div class="home-header">
+    <?php
+    $emailmsg = "";
+    $pasdmsg = "";
+    $msg = "";
+
+    if(!empty($_REQUEST['emailmsg'])){
+        $emailmsg = $_REQUEST['emailmsg'];
+    }
+
+    if(!empty($_REQUEST['pasdmsg'])){
+        $pasdmsg = $_REQUEST['pasdmsg'];
+    }
+
+    if(!empty($_REQUEST['msg'])){
+        $msg = $_REQUEST['msg'];
+    }
+    ?>
+
+    <div class="login-container">
+        <div class="login-header">
             <div class="logo-container">
                 <img src="images/logo1.png" alt="Library Logo" />
             </div>
             <!-- <h1>📚 LIBRARY</h1>
-            <p class="subtitle">Management System</p> -->
-            <p class="description">
-                A comprehensive library management solution designed to streamline book inventory, 
-                user management, and lending operations.
-            </p>
+            <p>Student Login Portal</p> -->
         </div>
 
-        <div class="login-options">
-            <!-- Admin Login Card -->
-            <a href="admin-login.php" class="login-card">
-                <div class="card-icon">🔐</div>
-                <h2 class="card-title">Admin Login</h2>
-                <p class="card-description">
-                    Manage books, users, and system settings with administrative access
-                </p>
-                <button class="login-btn">Login as Admin</button>
-            </a>
+        <?php if($msg): ?>
+            <div class="alert-msg"><?php echo htmlspecialchars($msg); ?></div>
+        <?php endif; ?>
 
-            <!-- Student Login Card -->
-            <a href="student-login.php" class="login-card">
-                <div class="card-icon">👥</div>
-                <h2 class="card-title">Student Login</h2>
-                <p class="card-description">
-                    Access your account to request and manage book borrowing
-                </p>
-                <button class="login-btn">Login as Student</button>
-            </a>
-        </div>
+        <div class="login-form-wrapper">
+            <h3>Student Login</h3>
+            <form action="login_server_page.php" method="GET">
+                <div class="form-group">
+                    <label for="studentEmail">Email Address</label>
+                    <input type="email" id="studentEmail" name="login_email" placeholder="Enter your email" required>
+                    <?php if($emailmsg): ?>
+                        <span class="error-label"><?php echo htmlspecialchars($emailmsg); ?></span>
+                    <?php endif; ?>
+                </div>
 
-        <div class="features">
-            <h3>Why Use Our System?</h3>
-            <div class="feature-list">
-                <div class="feature-item">Fast Book Search</div>
-                <div class="feature-item">Easy Book Requests</div>
-                <div class="feature-item">Track Due Dates</div>
-                <div class="feature-item">Secure Accounts</div>
-                <div class="feature-item">Expert Support</div>
-                <div class="feature-item">Available 24/7</div>
+                <div class="form-group">
+                    <label for="studentPassword">Password</label>
+                    <input type="password" id="studentPassword" name="login_pasword" placeholder="Enter your password" required>
+                    <?php if($pasdmsg): ?>
+                        <span class="error-label"><?php echo htmlspecialchars($pasdmsg); ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <button type="submit" class="btnSubmit">Login</button>
+            </form>
+
+            <div class="signup-prompt">
+                <p>Don't have an account yet?</p>
+                <a href="student-signup.php" class="signup-btn">Sign Up Now</a>
+            </div>
+
+            <div class="back-link">
+                <a href="index.php">← Back to Home</a>
             </div>
         </div>
     </div>

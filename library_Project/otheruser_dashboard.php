@@ -21,12 +21,12 @@ include("data_class.php");
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
     <body class="dashboard-page">
-    <body>
+</body>
     <!-- NAVBAR -->
     <div class="navbar-student">
         <div class="navbar-brand">
             <img src="images/logo1.png" alt="Library" class="nav-logo" />
-            <span class="brand-text">Student Portal</span>
+            <span class="brand-text"></span>
         </div>
         <a href="index.php" class="navbar-logout">LOGOUT</a>
     </div>
@@ -82,7 +82,7 @@ include("data_class.php");
                     </div>
                     <div class="profile-info-item">
                         <span class="profile-label">Account Type</span>
-                        <span class="profile-value" style="text-transform: capitalize;"><?php echo $type ?></span>
+                        <span class="profile-value profile-type"><?php echo $type ?></span>
                     </div>
                 </div>
             </div>
@@ -107,7 +107,7 @@ include("data_class.php");
 
             foreach($recordset as $row){
                 $table .= "<tr>";
-                $table .= "<td><img src='uploads/".$row[1]."' style='width: 60px; height: 80px; border-radius: 8px;'></td>";
+                $table .= "<td><img src='uploads/".$row[1]."' class='book-thumb' alt='Book thumbnail'></td>";
                 $table .= "<td>".$row[2]."</td>";
                 $table .= "<td>".$row[4]."</td>";
                 $table .= "<td>".$row[6]."</td>";

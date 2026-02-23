@@ -1,7 +1,19 @@
 <?php
 session_start();
 
-$userloginid = $_SESSION["userid"] = $_GET['userlogid'];
+// Determine the current user id: prefer GET, fall back to session
+$userloginid = 0;
+if (isset($_GET['userlogid']) && is_numeric($_GET['userlogid'])) {
+    $userloginid = intval($_GET['userlogid']);
+    $_SESSION['userid'] = $userloginid;
+} elseif (!empty($_SESSION['userid'])) {
+    $userloginid = intval($_SESSION['userid']);
+} else {
+    // No user id available - redirect to login
+    header("Location: student-login.php?msg=Please+login");
+    exit();
+}
+
 include("data_class.php");
 ?>
 
@@ -55,29 +67,28 @@ include("data_class.php");
             <?php
             $u = new data;
             $u->setconnection();
-            $u->getissuebook($userloginid);
-            $recordset = $u->getissuebook($userloginid);
+            $records = $u->getissuebook($userloginid);
 
-            if(count($recordset) > 0) {
-                $table = "<div class='table-responsive'><table><thead><tr><th>Book Name</th><th>Branch</th><th>Issue Date</th><th>Return Date</th><th>Fine</th><th>Action</th></tr></thead><tbody>";
+            if(!empty($records) && count($records) > 0) {
+                $table = "<div class='table-responsive'><table><thead><tr><th>Book Name</th><th>Type</th><th>Issue Date</th><th>Return Date</th><th>Fine</th><th>Action</th></tr></thead><tbody>";
 
-                foreach($recordset as $row){
+                foreach($records as $row){
                     $table .= "<tr>";
-                    $table .= "<td><strong>".$row[2]."</strong></td>";
-                    $table .= "<td><span style='background: rgba(129, 140, 248, 0.2); color: #818cf8; padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;'>".$row[8]."</span></td>";
-                    $table .= "<td>".$row[3]."</td>";
-                    $table .= "<td>".$row[6]."</td>";
-                    $table .= "<td><span class='badge' style='background: rgba(248, 113, 113, 0.2); color: #fca5a5;'>".$row[7]."</span></td>";
-                    $table .= "<td><a href='otheruser_dashboard.php?returnid=".$row[0]."&userlogid=".$userloginid."'><button type='button' class='btn-action'>Return Book</button></a></td>";
+                    $table .= "<td><strong>".(isset($row['issuebook']) ? $row['issuebook'] : $row[3])."</strong></td>";
+                    $table .= "<td><span class='tag-type'>".(isset($row['issuetype']) ? $row['issuetype'] : $row[4])."</span></td>";
+                    $table .= "<td>".(isset($row['issuedate']) ? $row['issuedate'] : $row[6])."</td>";
+                    $table .= "<td>".(isset($row['issuereturn']) ? $row['issuereturn'] : $row[7])."</td>";
+                    $table .= "<td><span class='fine-badge'>".(isset($row['fine']) ? $row['fine'] : $row[8])."</span></td>";
+                    $table .= "<td><a href='otheruser_dashboard.php?returnid=".$row['id']."&userlogid=".$userloginid."'><button type='button' class='btn-action'>Return Book</button></a></td>";
                     $table .= "</tr>";
                 }
-                }
+                
                 $table .= "</tbody></table></div>";
 
                 echo $table;
             } else {
-                echo "<div style='padding: 2rem; text-align: center; color: var(--text-secondary);'>";
-                echo "<p style='font-size: 1.1rem;'>No books currently issued.</p>";
+                echo "<div class='empty-state'>";
+                echo "<p>No books currently issued.</p>";
                 echo "</div>";
             }
             ?>
@@ -86,9 +97,9 @@ include("data_class.php");
         <!-- RETURN CONFIRMATION SECTION -->
         <?php if(!empty($_REQUEST['returnid'])) { ?>
         <div class="content-section active" style="margin-top: 2rem;">
-            <div style="padding: 2rem; text-align: center; background: rgba(34, 197, 94, 0.1); border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.3);">
-                <p style="font-size: 1.2rem; color: #86efac; font-weight: 600;">✅ Book returned successfully!</p>
-                <a href="book_report.php?userlogid=<?php echo $userloginid; ?>" style="margin-top: 1rem; display: inline-block;">
+            <div class="success-box">
+                <p class="success-text">✅ Book returned successfully!</p>
+                <a href="book_report.php?userlogid=<?php echo $userloginid; ?>" class="mt-link">
                     <button type="button" class="btn-action">View Updated Report</button>
                 </a>
             </div>

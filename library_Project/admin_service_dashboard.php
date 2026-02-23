@@ -88,16 +88,16 @@
             <?php
             $u = new data;
             $u->setconnection();
-            $u->requestbookdata();
+            // $u->requestbookdata();
             $recordset = $u->requestbookdata();
 
             $table = "<div class='table-responsive'><table><thead><tr><th>Person Name</th><th>Person Type</th><th>Book Name</th><th>Days</th><th>Action</th></tr></thead><tbody>";
             foreach($recordset as $row){
                 $table .= "<tr>";
-                $table .= "<td>".$row[0]."</td>";
-                $table .= "<td>".$row[1]."</td>";
-                $table .= "<td>".$row[2]."</td>";
                 $table .= "<td>".$row[3]."</td>";
+                $table .= "<td>".$row[4]."</td>";
+                $table .= "<td>".$row[5]."</td>";
+                $table .= "<td>".$row[6]."</td>";
                 $table .= "<td><a href='approvebookrequest.php?reqid=".$row[0]."&book=".$row[5]."&userselect=".$row[3]."&days=".$row[6]."'><button type='button' class='btn btn-primary'>Approve</button></a></td>";
                 $table .= "</tr>";
             }

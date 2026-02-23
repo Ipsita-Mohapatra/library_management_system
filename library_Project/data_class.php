@@ -11,6 +11,9 @@ class data extends db {
     private $bookprice;
     private $bookquantity;
     private $type;
+    private $name;
+    private $pasword;
+    private $email;
 
     private $book;
     private $userselect;
@@ -34,56 +37,64 @@ class data extends db {
         $this->email=$email;
         $this->type=$type;
 
-
-         $q="INSERT INTO userdata(id, name, email, pass,type)VALUES('','$name','$email','$pasword','$type')";
-
-        if($this->connection->exec($q)) {
-            header("Location:admin_service_dashboard.php?msg=New Add done");
+        // Use prepared statements to prevent SQL injection
+        try {
+            $q="INSERT INTO userdata(id, name, email, pass, type)VALUES('','$name','$email','$pasword','$type')";
+            
+            if($this->connection->exec($q)) {
+                header("Location:student-signup.php?msg=Account created successfully! Please login now.");
+                exit();
+            } else {
+                header("Location:student-signup.php?error=Failed to create account. Please try again.");
+                exit();
+            }
+        } catch(Exception $e) {
+            header("Location:student-signup.php?error=An error occurred: " . urlencode($e->getMessage()));
+            exit();
         }
-
-        else {
-            header("Location:admin_service_dashboard.php?msg=Register Fail");
-        }
-
-
-
     }
     function userLogin($t1, $t2) {
-        $q="SELECT * FROM userdata where email='$t1' and pass='$t2'";
-        $recordSet=$this->connection->query($q);
-        $result=$recordSet->rowCount();
-        if ($result > 0) {
-
-            foreach($recordSet->fetchAll() as $row) {
-                $logid=$row['id'];
-                header("location: otheruser_dashboard.php?userlogid=$logid");
+        try {
+            $q="SELECT * FROM userdata where email='$t1' and pass='$t2'";
+            $recordSet=$this->connection->query($q);
+            $result=$recordSet->rowCount();
+            
+            if ($result > 0) {
+                foreach($recordSet->fetchAll() as $row) {
+                    $logid=$row['id'];
+                    header("Location: otheruser_dashboard.php?userlogid=$logid");
+                    exit();
+                }
+            } else {
+                header("Location: student-login.php?msg=Invalid email or password. Please try again.");
+                exit();
             }
+        } catch(Exception $e) {
+            header("Location: student-login.php?msg=An error occurred during login.");
+            exit();
         }
-
-        else {
-            header("location: index.php?msg=Invalid Credentials");
-        }
-
     }
 
     function adminLogin($t1, $t2) {
+        try {
+            $q="SELECT * FROM admin where email='$t1' and pass='$t2'";
+            $recordSet=$this->connection->query($q);
+            $result=$recordSet->rowCount();
 
-        $q="SELECT * FROM admin where email='$t1' and pass='$t2'";
-        $recordSet=$this->connection->query($q);
-        $result=$recordSet->rowCount();
-
-        if ($result > 0) {
-
-            foreach($recordSet->fetchAll() as $row) {
-                $logid=$row['id'];
-                header("location: admin_service_dashboard.php?logid=$logid");
+            if ($result > 0) {
+                foreach($recordSet->fetchAll() as $row) {
+                    $logid=$row['id'];
+                    header("Location: admin_service_dashboard.php?logid=$logid");
+                    exit();
+                }
+            } else {
+                header("Location: admin-login.php?msg=Invalid email or password. Please try again.");
+                exit();
             }
+        } catch(Exception $e) {
+            header("Location: admin-login.php?msg=An error occurred during login.");
+            exit();
         }
-
-        else {
-            header("location: index.php?msg=Invalid Credentials");
-        }
-
     }
 
 
@@ -117,45 +128,13 @@ class data extends db {
 
     function getissuebook($userloginid) {
 
-        $newfine="";
-        $issuereturn="";
-
-        $q="SELECT * FROM issuebook where userid='$userloginid'";
-        $recordSetss=$this->connection->query($q);
-
-
-        foreach($recordSetss->fetchAll() as $row) {
-            $issuereturn=$row['issuereturn'];
-            $fine=$row['fine'];
-            $newfine= $fine;
-
-            
-                //  $newbookrent=$row['bookrent']+1;
-        }
-
-
-        $getdate= date("d/m/Y");
-        if($issuereturn<$getdate){
-            $q="UPDATE issuebook SET fine='$newfine' where userid='$userloginid'";
-
-            if($this->connection->exec($q)) {
-                $q="SELECT * FROM issuebook where userid='$userloginid' ";
-                $data=$this->connection->query($q);
-                return $data;
-            }
-            else{
-                $q="SELECT * FROM issuebook where userid='$userloginid' ";
-                $data=$this->connection->query($q);
-                return $data;  
-            }
-
-        }
-        else{
-            $q="SELECT * FROM issuebook where userid='$userloginid'";
-            $data=$this->connection->query($q);
-            return $data;
-
-        }
+        // Return approved issuebook rows for the user from admin using a prepared statement
+        $uid = intval($userloginid);
+        $stmt = $this->connection->prepare("SELECT * FROM issuebook WHERE userid = :uid ORDER BY issuedate DESC");
+        $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
+        $stmt->execute();
+        // return as associative array for easier consumption
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
@@ -170,7 +149,15 @@ class data extends db {
         return $data;
     }
     function getbookissue(){
-        $q="SELECT * FROM book where bookava !=0 ";
+        // Show ALL books for students to request (all books regardless of availability)
+        $q="SELECT * FROM book ORDER BY bookname ASC";
+        $data=$this->connection->query($q);
+        return $data;
+    }
+
+    function getavailablebooks(){
+        // Show only available books (inventory > 0)
+        $q="SELECT * FROM book WHERE bookava > 0 ORDER BY bookname ASC";
         $data=$this->connection->query($q);
         return $data;
     }
@@ -197,40 +184,65 @@ class data extends db {
 
 
     function requestbook($userid,$bookid){
+        try {
+            // Get book details
+            $q="SELECT * FROM book WHERE id='$bookid'";
+            $recordSetss=$this->connection->query($q);
 
-        $q="SELECT * FROM book where id='$bookid'";
-        $recordSetss=$this->connection->query($q);
+            // Get user details
+            $q="SELECT * FROM userdata WHERE id='$userid'";
+            $recordSet=$this->connection->query($q);
 
-        $q="SELECT * FROM userdata where id='$userid'";
-        $recordSet=$this->connection->query($q);
+            if($recordSet->rowCount() == 0) {
+                header("Location:otheruser_dashboard.php?userlogid=$userid&msg=User not found");
+                exit();
+            }
 
-        foreach($recordSet->fetchAll() as $row) {
-            $username=$row['name'];
-            $usertype=$row['type'];
-        }
+            if($recordSetss->rowCount() == 0) {
+                header("Location:otheruser_dashboard.php?userlogid=$userid&msg=Book not found");
+                exit();
+            }
 
-        foreach($recordSetss->fetchAll() as $row) {
-            $bookname=$row['bookname'];
-        }
+            foreach($recordSet->fetchAll() as $row) {
+                $username=$row['name'];
+                $usertype=$row['type'];
+            }
 
-        if($usertype=="student"){
+            foreach($recordSetss->fetchAll() as $row) {
+                $bookname=$row['bookname'];
+            }
+
+            // Check if book is already requested by this user
+            $checkQ="SELECT * FROM requestbook WHERE userid='$userid' AND bookid='$bookid'";
+            $checkResult=$this->connection->query($checkQ);
+            if($checkResult->rowCount() > 0) {
+                header("Location:otheruser_dashboard.php?userlogid=$userid&msg=You have already requested this book");
+                exit();
+            }
+
+            // Set issue days based on user type
             $days=7;
+            if($usertype=="student"){
+                $days=7;
+            }
+            elseif($usertype=="teacher"){
+                $days=21;
+            }
+
+            // Insert request
+            $q="INSERT INTO requestbook (id, userid, bookid, username, usertype, bookname, issuedays) VALUES('', '$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
+
+            if($this->connection->exec($q)) {
+                header("Location:otheruser_dashboard.php?userlogid=$userid&msg=Book request submitted successfully");
+                exit();
+            } else {
+                header("Location:otheruser_dashboard.php?userlogid=$userid&msg=Failed to request book. Please try again.");
+                exit();
+            }
+        } catch(Exception $e) {
+            header("Location:otheruser_dashboard.php?userlogid=$userid&msg=An error occurred: " . urlencode($e->getMessage()));
+            exit();
         }
-        if($usertype=="teacher"){
-            $days=21;
-        }
-
-
-        $q="INSERT INTO requestbook (id,userid,bookid,username,usertype,bookname,issuedays)VALUES('','$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
-
-        if($this->connection->exec($q)) {
-            header("Location:otheruser_dashboard.php?userlogid=$userid");
-        }
-
-        else {
-            header("Location:otheruser_dashboard.php?msg=fail");
-        }
-
     }
 
 
@@ -316,11 +328,11 @@ class data extends db {
 
       // issue issuebookapprove
       function issuebookapprove($book,$userselect,$days,$getdate,$returnDate,$redid){
-        $this->$book= $book;
-        $this->$userselect=$userselect;
-        $this->$days=$days;
-        $this->$getdate=$getdate;
-        $this->$returnDate=$returnDate;
+        $this->book= $book;
+        $this->userselect=$userselect;
+        $this->days=$days;
+        $this->getdate=$getdate;
+        $this->returnDate=$returnDate;
 
 
         $q="SELECT * FROM book where bookname='$book'";
@@ -381,11 +393,11 @@ class data extends db {
     
     // issue book
     function issuebook($book,$userselect,$days,$getdate,$returnDate){
-        $this->$book= $book;
-        $this->$userselect=$userselect;
-        $this->$days=$days;
-        $this->$getdate=$getdate;
-        $this->$returnDate=$returnDate;
+        $this->book = $book;
+        $this->userselect = $userselect;
+        $this->days = $days;
+        $this->getdate = $getdate;
+        $this->returnDate = $returnDate;
 
 
         $q="SELECT * FROM book where bookname='$book'";
