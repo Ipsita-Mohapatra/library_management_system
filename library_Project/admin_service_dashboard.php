@@ -88,21 +88,29 @@
             <?php
             $u = new data;
             $u->setconnection();
-            // $u->requestbookdata();
             $recordset = $u->requestbookdata();
-
-            $table = "<div class='table-responsive'><table><thead><tr><th>Person Name</th><th>Person Type</th><th>Book Name</th><th>Days</th><th>Action</th></tr></thead><tbody>";
-            foreach($recordset as $row){
-                $table .= "<tr>";
-                $table .= "<td>".$row[3]."</td>";
-                $table .= "<td>".$row[4]."</td>";
-                $table .= "<td>".$row[5]."</td>";
-                $table .= "<td>".$row[6]."</td>";
-                $table .= "<td><a href='approvebookrequest.php?reqid=".$row[0]."&book=".$row[5]."&userselect=".$row[3]."&days=".$row[6]."'><button type='button' class='btn btn-primary'>Approve</button></a></td>";
-                $table .= "</tr>";
+            $records = $recordset->fetchAll(PDO::FETCH_ASSOC);
+            
+            if(count($records) == 0){
+                echo "<p style='color:#94a3b8'>No pending book requests.</p>";
+            } else {
+                $table = "<div class='table-responsive'><table><thead><tr><th>Person Name</th><th>Person Type</th><th>Book Name</th><th>Days</th><th>Action</th></tr></thead><tbody>";
+                foreach($records as $row){
+                    $table .= "<tr>";
+                    $table .= "<td>".$row['username']."</td>";
+                    $table .= "<td>".$row['usertype']."</td>";
+                    $table .= "<td>".$row['bookname']."</td>";
+                    $table .= "<td>".$row['issuedays']."</td>";
+                    $reqid = rawurlencode($row['id']);
+                    $bookName = rawurlencode($row['bookname']);
+                    $userSelect = rawurlencode($row['username']);
+                    $daysVal = rawurlencode($row['issuedays']);
+                    $table .= "<td><a href='approve_request_form.php?reqid={$reqid}&book={$bookName}&userselect={$userSelect}&days={$daysVal}'><button type='button' class='btn btn-primary'>Approve</button></a></td>";
+                    $table .= "</tr>";
+                }
+                $table .= "</tbody></table></div>";
+                echo $table;
             }
-            $table .= "</tbody></table></div>";
-            echo $table;
             ?>
         </div>
 

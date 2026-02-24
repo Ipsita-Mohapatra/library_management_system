@@ -373,6 +373,7 @@
                 <div class="form-group">
                     <label for="adminPassword">Password</label>
                     <input type="password" id="adminPassword" name="login_pasword" placeholder="Enter your password" required>
+                    <div style="margin-top:.5rem"><a href="admin_forgot_password.php">Forgot password?</a></div>
                     <?php if($pasdmsg): ?>
                         <span class="error-label"><?php echo htmlspecialchars($pasdmsg); ?></span>
                     <?php endif; ?>

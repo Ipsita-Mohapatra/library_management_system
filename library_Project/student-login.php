@@ -414,6 +414,7 @@
                 <div class="form-group">
                     <label for="studentPassword">Password</label>
                     <input type="password" id="studentPassword" name="login_pasword" placeholder="Enter your password" required>
+                    <div style="margin-top:.5rem"><a href="forgot_password.php">Forgot password?</a></div>
                     <?php if($pasdmsg): ?>
                         <span class="error-label"><?php echo htmlspecialchars($pasdmsg); ?></span>
                     <?php endif; ?>

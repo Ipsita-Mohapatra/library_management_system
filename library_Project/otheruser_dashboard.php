@@ -31,6 +31,142 @@ include("data_class.php");
         <a href="index.php" class="navbar-logout">LOGOUT</a>
     </div>
 
+    <!-- MESSAGE ALERT POPUP -->
+    <?php
+    $msg = "";
+    // Check session first, then URL parameter
+    if(!empty($_SESSION['msg'])){
+        $msg = $_SESSION['msg'];
+        unset($_SESSION['msg']); // clear after showing once
+    } elseif(!empty($_REQUEST['msg'])){
+        $msg = $_REQUEST['msg'];
+    }
+    
+    if($msg): ?>
+        <div class="toast-notification" id="alertToast">
+            <div class="toast-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <span class="toast-text"><?php echo htmlspecialchars($msg); ?></span>
+            <button type="button" class="toast-close" onclick="closeToast()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <style>
+            .toast-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #fff3e0 0%, #fff8f5 100%);
+                border-left: 4px solid #ff9800;
+                border-radius: 8px;
+                padding: 0.75rem 1rem;
+                box-shadow: 0 4px 16px rgba(255, 152, 0, 0.25);
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                max-width: 320px;
+                z-index: 9999;
+                animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(400px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(400px);
+                }
+            }
+            
+            .toast-notification.closing {
+                animation: slideOutRight 0.3s ease-in forwards;
+            }
+            
+            .toast-icon {
+                color: #ff9800;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+            }
+            
+            .toast-text {
+                color: #e65100;
+                font-weight: 600;
+                font-size: 0.9rem;
+                flex: 1;
+            }
+            
+            .toast-close {
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #ff9800;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                transition: color 0.2s ease, transform 0.2s ease;
+                flex-shrink: 0;
+            }
+            
+            .toast-close:hover {
+                color: #e65100;
+                transform: rotate(90deg);
+            }
+            
+            @media (max-width: 600px) {
+                .toast-notification {
+                    top: 10px;
+                    right: 10px;
+                    left: 10px;
+                    max-width: none;
+                }
+                .toast-text {
+                    font-size: 0.85rem;
+                }
+            }
+        </style>
+        <script>
+            function closeToast() {
+                const toast = document.getElementById('alertToast');
+                if (toast) {
+                    toast.classList.add('closing');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }
+            }
+            
+            // Auto-close toast after 5 seconds
+            setTimeout(() => {
+                const toast = document.getElementById('alertToast');
+                if (toast && !toast.classList.contains('closing')) {
+                    closeToast();
+                }
+            }, 5000);
+        </script>
+    <?php endif; ?>
+
     <!-- SIDEBAR -->
     <nav class="sidebar">
         <ul class="sidebar-nav">

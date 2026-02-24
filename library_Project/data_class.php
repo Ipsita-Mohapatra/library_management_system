@@ -53,6 +53,56 @@ class data extends db {
             exit();
         }
     }
+    /**
+     * Reset password for a user or admin.
+     * $role should be 'user' or 'admin'
+     */
+    function resetPassword($email, $newpass, $role = 'user'){
+        try{
+            if($role === 'admin'){
+                $stmt = $this->connection->prepare("UPDATE admin SET pass = :pass WHERE email = :email");
+            } else {
+                $stmt = $this->connection->prepare("UPDATE userdata SET pass = :pass WHERE email = :email");
+            }
+            $stmt->bindParam(':pass', $newpass);
+            $stmt->bindParam(':email', $email);
+            if($stmt->execute()){
+                if($stmt->rowCount() > 0){
+                    if($role === 'admin') header("Location:admin-login.php?msg=Password+updated+successfully");
+                    else header("Location:student-login.php?msg=Password+updated+successfully");
+                    exit();
+                } else {
+                    if($role === 'admin') header("Location:admin-login.php?msg=Email+not+found");
+                    else header("Location:student-login.php?msg=Email+not+found");
+                    exit();
+                }
+            } else {
+                if($role === 'admin') header("Location:admin-login.php?msg=Failed+to+update+password");
+                else header("Location:student-login.php?msg=Failed+to+update+password");
+                exit();
+            }
+        }catch(Exception $e){
+            if($role === 'admin') header("Location:admin-login.php?msg=Error");
+            else header("Location:student-login.php?msg=Error");
+            exit();
+        }
+    }
+
+    // Ensure userdata has columns for blocking a user (adds columns if missing)
+    private function ensureUserBlockColumns(){
+        try{
+            $check = $this->connection->query("SHOW COLUMNS FROM userdata LIKE 'blocked'");
+            if($check->rowCount() == 0){
+                $this->connection->exec("ALTER TABLE userdata ADD COLUMN blocked TINYINT(1) NOT NULL DEFAULT 0");
+            }
+            $check2 = $this->connection->query("SHOW COLUMNS FROM userdata LIKE 'blocked_reason'");
+            if($check2->rowCount() == 0){
+                $this->connection->exec("ALTER TABLE userdata ADD COLUMN blocked_reason VARCHAR(255) NULL");
+            }
+        }catch(Exception $e){
+            // silently continue; not critical for reset flow
+        }
+    }
     function userLogin($t1, $t2) {
         try {
             $q="SELECT * FROM userdata where email='$t1' and pass='$t2'";
@@ -185,31 +235,37 @@ class data extends db {
 
     function requestbook($userid,$bookid){
         try {
-            // Get book details
-            $q="SELECT * FROM book WHERE id='$bookid'";
-            $recordSetss=$this->connection->query($q);
-
             // Get user details
             $q="SELECT * FROM userdata WHERE id='$userid'";
             $recordSet=$this->connection->query($q);
-
+            
             if($recordSet->rowCount() == 0) {
                 header("Location:otheruser_dashboard.php?userlogid=$userid&msg=User not found");
                 exit();
             }
+            
+            $userrow = $recordSet->fetch(PDO::FETCH_ASSOC);
+            $username = $userrow['name'];
+            $usertype = $userrow['type'];
 
+            // Get book details
+            $q="SELECT * FROM book WHERE id='$bookid'";
+            $recordSetss=$this->connection->query($q);
+            
             if($recordSetss->rowCount() == 0) {
                 header("Location:otheruser_dashboard.php?userlogid=$userid&msg=Book not found");
                 exit();
             }
-
-            foreach($recordSet->fetchAll() as $row) {
-                $username=$row['name'];
-                $usertype=$row['type'];
-            }
-
-            foreach($recordSetss->fetchAll() as $row) {
-                $bookname=$row['bookname'];
+            
+            $bookrow = $recordSetss->fetch(PDO::FETCH_ASSOC);
+            $bookname = $bookrow['bookname'];
+            $available = intval($bookrow['bookava']);
+            
+            // Check availability: if no available copies, prevent request
+            if($available <= 0){
+                $_SESSION['msg'] = "Book is not available";
+                header("Location:otheruser_dashboard.php?userlogid=$userid");
+                exit();
             }
 
             // Check if book is already requested by this user
@@ -221,16 +277,10 @@ class data extends db {
             }
 
             // Set issue days based on user type
-            $days=7;
-            if($usertype=="student"){
-                $days=7;
-            }
-            elseif($usertype=="teacher"){
-                $days=21;
-            }
+            $days = ($usertype=="teacher") ? 21 : 7;
 
             // Insert request
-            $q="INSERT INTO requestbook (id, userid, bookid, username, usertype, bookname, issuedays) VALUES('', '$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
+            $q="INSERT INTO requestbook (userid, bookid, username, usertype, bookname, issuedays) VALUES('$userid', '$bookid', '$username', '$usertype', '$bookname', '$days')";
 
             if($this->connection->exec($q)) {
                 header("Location:otheruser_dashboard.php?userlogid=$userid&msg=Book request submitted successfully");
@@ -282,9 +332,10 @@ class data extends db {
         //     header("Location:otheruser_dashboard.php?msg=fail");
         //  }
         }
-        // if($fine!=0){
-        //     header("Location:otheruser_dashboard.php?userlogid=$userid&msg=fine");
-        // }
+        if($fine!=0){
+            header("Location:otheruser_dashboard.php?userlogid=$userid&msg=Outstanding+fine+of+".urlencode($fine));
+            exit();
+        }
        
 
     }
@@ -326,6 +377,14 @@ class data extends db {
             return $data;
         }
 
+        // Return single request row by id
+        public function getRequestById($id){
+            $stmt = $this->connection->prepare("SELECT * FROM requestbook WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
       // issue issuebookapprove
       function issuebookapprove($book,$userselect,$days,$getdate,$returnDate,$redid){
         $this->book= $book;
@@ -335,7 +394,12 @@ class data extends db {
         $this->returnDate=$returnDate;
 
 
-        $q="SELECT * FROM book where bookname='$book'";
+        // allow $book to be either id (int) or name (string)
+        if(is_numeric($book)){
+            $q="SELECT * FROM book WHERE id='".intval($book)."'";
+        } else {
+            $q="SELECT * FROM book WHERE bookname='".str_replace("'","''",$book)."'";
+        }
         $recordSetss=$this->connection->query($q);
 
         $q="SELECT * FROM userdata where name='$userselect'";
@@ -350,19 +414,55 @@ class data extends db {
 
                 // header("location: admin_service_dashboard.php?logid=$logid");
             }
+            // Ensure block columns exist
+            $this->ensureUserBlockColumns();
+
+            // Check for any overdue (past issuereturn) issuebook entries for this user
+            $overdueQ = "SELECT id, issuereturn FROM issuebook WHERE userid='$issueid' AND (fine = 0 OR fine IS NULL)";
+            $overdueRs = $this->connection->query($overdueQ);
+            if($overdueRs){
+                $now = new DateTime();
+                $totalFine = 0;
+                foreach($overdueRs->fetchAll() as $orow){
+                    $dueStr = $orow['issuereturn'];
+                    $dueDate = DateTime::createFromFormat('d/m/Y', $dueStr);
+                    if($dueDate && $now > $dueDate){
+                        $daysOver = (int)$now->diff($dueDate)->format('%a');
+                        $fine = $daysOver * 100; // rate: 100 per day
+                        $iid = $orow['id'];
+                        $uq = $this->connection->prepare("UPDATE issuebook SET fine = :fine WHERE id = :id");
+                        $uq->bindParam(':fine', $fine);
+                        $uq->bindParam(':id', $iid);
+                        $uq->execute();
+                        $totalFine += $fine;
+                    }
+                }
+                // Only block if fines were actually calculated
+                if($totalFine > 0){
+                    $blockReason = 'Overdue fines: ' . $totalFine;
+                    $bu = $this->connection->prepare("UPDATE userdata SET blocked = 1, blocked_reason = :reason WHERE id = :uid");
+                    $bu->bindParam(':reason', $blockReason);
+                    $bu->bindParam(':uid', $issueid);
+                    $bu->execute();
+
+                    header("Location:admin_service_dashboard.php?msg=User+has+overdue+books+and+fines");
+                    exit();
+                }
+            }
+            $bookname = '';
+            $bookid = 0;
             foreach($recordSetss->fetchAll() as $row) {
                 $bookid=$row['id'];
                 $bookname=$row['bookname'];
-
-                    $newbookava=$row['bookava']-1;
-                     $newbookrent=$row['bookrent']+1;
+                $newbookava=$row['bookava']-1;
+                $newbookrent=$row['bookrent']+1;
             }
 
         
             $q="UPDATE book SET bookava='$newbookava', bookrent='$newbookrent' where id='$bookid'";
             if($this->connection->exec($q)){
 
-            $q="INSERT INTO issuebook (userid,issuename,issuebook,issuetype,issuedays,issuedate,issuereturn,fine)VALUES('$issueid','$userselect','$book','$issuetype','$days','$getdate','$returnDate','0')";
+            $q="INSERT INTO issuebook (userid,issuename,issuebook,issuetype,issuedays,issuedate,issuereturn,fine)VALUES('$issueid','$userselect','$bookname','$issuetype','$days','$getdate','$returnDate','0')";
 
             if($this->connection->exec($q)) {
 
@@ -400,7 +500,12 @@ class data extends db {
         $this->returnDate = $returnDate;
 
 
-        $q="SELECT * FROM book where bookname='$book'";
+        // allow $book to be either id (int) or name (string)
+        if(is_numeric($book)){
+            $q="SELECT * FROM book WHERE id='".intval($book)."'";
+        } else {
+            $q="SELECT * FROM book WHERE bookname='".str_replace("'","''",$book)."'";
+        }
         $recordSetss=$this->connection->query($q);
 
         $q="SELECT * FROM userdata where name='$userselect'";
@@ -418,16 +523,21 @@ class data extends db {
             foreach($recordSetss->fetchAll() as $row) {
                 $bookid=$row['id'];
                 $bookname=$row['bookname'];
-
-                    $newbookava=$row['bookava']-1;
-                     $newbookrent=$row['bookrent']+1;
+                $currentAva = intval($row['bookava']);
+                $newbookava = $currentAva - 1;
+                $newbookrent = $row['bookrent']+1;
             }
 
-        
+            // If no available copies, do not allow approval/issue
+            if($currentAva <= 0){
+                header("Location:admin_service_dashboard.php?msg=Book+not+available+for+issue");
+                exit();
+            }
+
             $q="UPDATE book SET bookava='$newbookava', bookrent='$newbookrent' where id='$bookid'";
             if($this->connection->exec($q)){
 
-            $q="INSERT INTO issuebook (userid,issuename,issuebook,issuetype,issuedays,issuedate,issuereturn,fine)VALUES('$issueid','$userselect','$book','$issuetype','$days','$getdate','$returnDate','0')";
+            $q="INSERT INTO issuebook (userid,issuename,issuebook,issuetype,issuedays,issuedate,issuereturn,fine)VALUES('$issueid','$userselect','$bookname','$issuetype','$days','$getdate','$returnDate','0')";
 
             if($this->connection->exec($q)) {
                 header("Location:admin_service_dashboard.php?msg=done");
