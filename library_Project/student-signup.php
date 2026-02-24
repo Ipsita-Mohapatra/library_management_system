@@ -446,6 +446,8 @@
                         <select id="accountType" name="type" required>
                             <option value="">Select Type</option>
                             <option value="student">Student</option>
+                            <option value="student">Teacher</option>
+
                         </select>
                     </div>
                 </div>
