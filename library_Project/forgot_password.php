@@ -12,7 +12,7 @@
         .wrap{width:100%;max-width:920px;display:grid;grid-template-columns:1fr 420px;gap:2rem;align-items:center}
         .intro{padding:2.2rem;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 8px 30px rgba(2,6,23,0.6);backdrop-filter:blur(6px)}
         .logo{display:flex;align-items:center;gap:12px}
-        .logo img{width:56px;height:56px;border-radius:8px;object-fit:cover}
+        .logo img{width:70px;height:28px;border-radius:8px;object-fit:cover}
         .title{font-size:1.6rem;font-weight:700;margin:0 0 .25rem}
         .subtitle{color:var(--muted);margin:0 0 1rem}
         .card{background:linear-gradient(180deg,var(--card), #061025);padding:2rem;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.03)}

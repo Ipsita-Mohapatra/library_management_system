@@ -172,17 +172,17 @@ include("data_class.php");
         <ul class="sidebar-nav">
             <li class="sidebar-nav-item">
                 <button class="sidebar-btn" onclick="openpart('myaccount')">
-                    <img src="images/icon/profile.png" alt="My Account"/> My Account
+                    <img src="images/icon/profile.png" alt="My Account" style="height:80px"/> My Account
                 </button>
             </li>
             <li class="sidebar-nav-item">
                 <button class="sidebar-btn" onclick="openpart('requestbook')">
-                    <img src="images/icon/book.png" alt="Request Book"/> Request Book
+                    <img src="images/icon/book.png" alt="Request Book" style="height: 80px"/> Request Book
                 </button>
             </li>
             <li class="sidebar-nav-item">
                 <a href="book_report.php?userlogid=<?php echo $userloginid; ?>" class="sidebar-btn">
-                    <img src="images/icon/monitoring.png" alt="Book Report"/> Book Report
+                    <img src="images/icon/monitoring.png" alt="Book Report" style="height: 80px"/> Book Report
                 </a>
             </li>
         </ul>

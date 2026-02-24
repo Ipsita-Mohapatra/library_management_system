@@ -47,12 +47,12 @@ include("data_class.php");
         <ul class="sidebar-nav">
             <li class="sidebar-nav-item">
                 <a href="otheruser_dashboard.php?userlogid=<?php echo $userloginid; ?>" class="sidebar-btn">
-                    <img src="images/icon/profile.png" alt="Dashboard"/> Dashboard
+                    <img src="images/icon/profile.png" alt="Dashboard" style="height: 130px"/> Dashboard
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <button class="sidebar-btn active">
-                    <img src="images/icon/monitoring.png" alt="Book Report"/> Book Report
+                    <img src="images/icon/monitoring.png" alt="Book Report" style="height: 130px"/> Book Report
                 </button>
             </li>
         </ul>
